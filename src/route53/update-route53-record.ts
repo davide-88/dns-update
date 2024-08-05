@@ -7,6 +7,7 @@ import {
 
 import { loggerFactory } from '../utils/logger/logger-factory.js';
 import { Logger } from '../utils/logger/logger.js';
+import { requireDefined } from '../utils/typescript/require-defined.js';
 
 const execPromise = promisify(exec);
 
@@ -28,13 +29,11 @@ export const updateRoute53Record = async ({
   logger?: Logger;
 }) => {
   const retrieveIpCommandOutput = await execPromise(retrieveIpCommand);
-  const ip = /"(?<ip>.*)"/.exec(retrieveIpCommandOutput.stdout)?.groups?.ip;
+  const ip = requireDefined(
+    /"(?<ip>.*)"/.exec(retrieveIpCommandOutput.stdout)?.groups?.ip,
+    `Failed to retrieve IP address: ${inspect(retrieveIpCommandOutput, { depth: null })}`,
+  );
 
-  if (!ip) {
-    throw new Error(
-      `Failed to retrieve IP address: ${inspect(retrieveIpCommandOutput, { depth: null })}`,
-    );
-  }
   //regexp ip v4
   const isIpV4 = /^(\d{1,3}\.){3}\d{1,3}$/.test(ip);
   const isIpV6 = /^([0-9a-f]{1,4}:){7}[0-9a-f]{1,4}$/.test(ip);

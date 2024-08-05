@@ -2,6 +2,7 @@ import { inspect, parseArgs } from 'node:util';
 
 import { route53ClientFactory } from '../utils/aws/sdk/route53-client-factory.js';
 import { loggerFactory } from '../utils/logger/logger-factory.js';
+import { requireDefined } from '../utils/typescript/require-defined.js';
 
 import { updateRoute53Record } from './update-route53-record.js';
 
@@ -25,13 +26,13 @@ try {
       },
     },
   });
-  const { hostedZoneId, recordName } = values;
-  if (!hostedZoneId) {
-    throw new Error('hostedZoneId is required');
-  }
-  if (!recordName) {
-    throw new Error('recordName is required');
-  }
+  const { hostedZoneId, recordName } = {
+    hostedZoneId: requireDefined(
+      values.hostedZoneId,
+      'hostedZoneId is required',
+    ),
+    recordName: requireDefined(values.recordName, 'recordName is required'),
+  };
 
   const updateOptions = {
     resourceRecordSetProps: {
