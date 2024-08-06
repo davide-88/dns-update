@@ -26,7 +26,7 @@ const inspectOptions = {
 
 export class ConsoleLogger implements Logger {
   private readonly level: LogLevel;
-  private readonly context?: string;
+  public readonly context?: string;
   private readonly argSerializer: (
     arg?: unknown,
   ) => string | unknown | undefined;
@@ -68,8 +68,8 @@ export class ConsoleLogger implements Logger {
           {
             ...(this.context ? { context: this.context } : {}),
             level: level.label,
-            timestamp: new Date().toISOString(),
             message: this.argSerializer(message),
+            timestamp: new Date().toISOString(),
           },
           inspectOptions,
         ),

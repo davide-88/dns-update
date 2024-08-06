@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import { hrtime } from 'node:process';
 import { inspect, InspectOptions } from 'node:util';
 import type { InitializeMiddleware, MetadataBearer } from '@aws-sdk/types';

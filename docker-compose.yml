@@ -1,0 +1,11 @@
+services:
+  update-route53-record:
+    image: update-route53-record:latest
+    container_name: update-route53-record
+    env_file:
+      - .env
+    volumes:
+      - ./volumes/log:/var/log
+networks:
+  default:
+    driver: bridge

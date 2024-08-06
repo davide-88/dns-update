@@ -13,13 +13,15 @@ export type CreateRoute53ClientOptions = Omit<Route53ClientConfig, 'logger'> & {
 };
 export const route53ClientFactory = {
   create: (config?: CreateRoute53ClientOptions): Route53Client => {
-    const logger =
-      config?.logger ?? loggerFactory.create({ level: LOG_LEVEL_LABEL.WARN });
+    const warnLogger = loggerFactory.create({
+      level: LOG_LEVEL_LABEL.WARN,
+      context: config?.logger.context ?? 'route53-client',
+    });
     const route53Client = new Route53Client({
       ...config,
-      logger: logger,
+      logger: warnLogger,
       credentials: fromTemporaryCredentials({
-        logger,
+        logger: warnLogger,
         masterCredentials: {
           accessKeyId: requireDefined(
             process.env.AWS_ACCESS_KEY_ID,
@@ -43,11 +45,14 @@ export const route53ClientFactory = {
         },
       }),
     });
-    route53Client.middlewareStack?.add(logMetricMiddleware.create({ logger }), {
-      step: 'initialize',
-      priority: 'low',
-      tags: ['metric_logger'],
-    });
+    route53Client.middlewareStack?.add(
+      logMetricMiddleware.create({ logger: config?.logger ?? warnLogger }),
+      {
+        step: 'initialize',
+        priority: 'low',
+        tags: ['metric_logger'],
+      },
+    );
     return route53Client;
   },
 };

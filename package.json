@@ -37,6 +37,7 @@
     "build": "pnpm run \"/^build:.*/\"",
     "build:bundle": "node build.js",
     "build:type-check": "tsc",
+    "docker:build": "pnpm build && docker build -t dns-update .",
     "fix:lint:prettier": "prettier --cache --cache-location=.prettiercache --list-different \"./**/*.{html,css,js,cjs,jsx,ts,cts,tsx,md,json}\" --write",
     "format": "pnpm run \"/^format:.*/\"",
     "format:eslint": "eslint --cache --color ./src/**/* --fix",

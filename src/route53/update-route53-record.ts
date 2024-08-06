@@ -28,7 +28,9 @@ export const updateRoute53Record = async ({
   };
   logger?: Logger;
 }) => {
+  logger.debug(`Retrieving IP address using command: ${retrieveIpCommand}`);
   const retrieveIpCommandOutput = await execPromise(retrieveIpCommand);
+  logger.debug(`Retrieved IP address: ${retrieveIpCommandOutput.stdout}`);
   const ip = requireDefined(
     /"(?<ip>.*)"/.exec(retrieveIpCommandOutput.stdout)?.groups?.ip,
     `Failed to retrieve IP address: ${inspect(retrieveIpCommandOutput, { depth: null })}`,
@@ -41,6 +43,9 @@ export const updateRoute53Record = async ({
     throw new Error(`Invalid IP address: ${ip}`);
   }
 
+  logger.debug(
+    `Updating Route 53 record: ${resourceRecordSetProps.name} with IPv${isIpV4 ? '4' : '6'} address: ${ip}`,
+  );
   await client.send(
     new ChangeResourceRecordSetsCommand({
       HostedZoneId: resourceRecordSetProps.hostedZoneId,
@@ -64,4 +69,5 @@ export const updateRoute53Record = async ({
       },
     }),
   );
+  logger.debug(`Updated Route 53 record!`);
 };
