@@ -1,6 +1,6 @@
 services:
   dns-update:
-    image: dns-update:latest
+    image: ghcr.io/davide-88/dns-update:release
     container_name: dns-update
     env_file:
       - .env
