@@ -48,12 +48,12 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@aws-sdk/client-route-53": "3.623.0",
+    "@aws-sdk/client-route-53": "3.624.0",
+    "@aws-sdk/credential-providers": "3.624.0",
     "esbuild": "0.23.0"
   },
   "devDependencies": {
-    "@aws-sdk/credential-providers": "^3.623.0",
-    "@aws-sdk/types": "^3.609.0",
+    "@aws-sdk/types": "3.609.0",
     "@commitlint/cli": "19.3.0",
     "@commitlint/config-conventional": "19.2.2",
     "@eslint/js": "9.8.0",

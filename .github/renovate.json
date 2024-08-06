@@ -1,0 +1,49 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "baseBranches": ["main"],
+  "labels": ["Renovate::Dependencies"],
+  "ignorePrAuthor": true,
+  "extends": ["config:recommended"],
+  "commitMessageAction": "⬆️ update",
+  "commitMessageTopic": "{{depName}}",
+  "automerge": false,
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["Security", "Type: Critical"]
+  },
+  "internalChecksFilter": "strict",
+  "prConcurrentLimit": 12,
+  "prHourlyLimit": 12,
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["^@types/"],
+      "groupName": "@types",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": ["^@aws-sdk/"],
+      "groupName": "@aws-sdk",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": ["eslint", "^@eslint"],
+      "groupName": "eslint",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": ["prettier"],
+      "groupName": "prettier",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": ["commitlint"],
+      "groupName": "commitlint",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    }
+  ]
+}

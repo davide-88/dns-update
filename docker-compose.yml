@@ -1,7 +1,7 @@
 services:
-  update-route53-record:
-    image: update-route53-record:latest
-    container_name: update-route53-record
+  dns-update:
+    image: dns-update:latest
+    container_name: dns-update
     env_file:
       - .env
     volumes:

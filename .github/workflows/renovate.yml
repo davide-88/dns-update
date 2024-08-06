@@ -1,0 +1,29 @@
+name: Renovate
+on:
+  schedule:
+    - cron: '0 0,6,12,18 * * *'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to run Renovate on'
+        required: false
+        default: 'main'
+      packageFile:
+        description: 'Package file to run Renovate on'
+        required: false
+        default: 'package.json'
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.7
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v40.2.5
+        with:
+          configurationFile: .github/renovate.json
+          token: ${{ secrets.RENOVATE_TOKEN }}
+        env:
+          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
+          RENOVATE_REPOSITORIES: '["davide-88/dns-update"]'
