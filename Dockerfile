@@ -1,4 +1,4 @@
-FROM node:22.6.0-alpine3.20
+FROM node:22.7.0-alpine3.20
 
 ENV HOSTED_ZONE_ID ""
 ENV RECORD_NAME ""
