@@ -1,4 +1,4 @@
-import { exec } from 'node:child_process';
+import { exec as nodeExec } from 'node:child_process';
 import { inspect, promisify } from 'node:util';
 import {
   ChangeResourceRecordSetsCommand,
@@ -9,17 +9,20 @@ import { loggerFactory } from '../utils/logger/logger-factory.js';
 import { Logger } from '../utils/logger/logger.js';
 import { requireDefined } from '../utils/typescript/require-defined.js';
 
-const execPromise = promisify(exec);
+const exec = promisify(nodeExec);
 
 export const updateRoute53Record = async ({
-  retrieveIpCommand,
   client,
+  commands,
   resourceRecordSetProps,
   logger = loggerFactory.create({
     context: 'update-route53-record',
   }),
 }: {
-  retrieveIpCommand: string;
+  commands: {
+    hostIp: string;
+    domainIp: string;
+  };
   client: Route53Client;
   resourceRecordSetProps: {
     hostedZoneId: string;
@@ -28,12 +31,19 @@ export const updateRoute53Record = async ({
   };
   logger?: Logger;
 }) => {
-  logger.debug(`Retrieving IP address using command: ${retrieveIpCommand}`);
-  const retrieveIpCommandOutput = await execPromise(retrieveIpCommand);
-  logger.debug(`Retrieved IP address: ${retrieveIpCommandOutput.stdout}`);
+  logger.debug(`Retrieving Host IP address using command: ${commands.hostIp}`);
+  logger.debug(
+    `Retrieving Domain IP address using command: ${commands.domainIp}`,
+  );
+  const [hostIpCommandOutput, domainIpCommandOutput] = await Promise.all([
+    exec(commands.hostIp),
+    exec(commands.domainIp),
+  ]);
+  logger.debug(`Retrieved Host IP address: ${hostIpCommandOutput.stdout}`);
+  logger.debug(`Retrieved Domain IP address: ${domainIpCommandOutput.stdout}`);
   const ip = requireDefined(
-    /"(?<ip>.*)"/.exec(retrieveIpCommandOutput.stdout)?.groups?.ip,
-    `Failed to retrieve IP address: ${inspect(retrieveIpCommandOutput, { depth: null })}`,
+    /"(?<ip>.*)"/.exec(hostIpCommandOutput.stdout)?.groups?.ip,
+    `Failed to retrieve IP address: ${inspect(hostIpCommandOutput, { depth: null })}`,
   );
 
   //regexp ip v4
@@ -41,6 +51,12 @@ export const updateRoute53Record = async ({
   const isIpV6 = /^([0-9a-f]{1,4}:){7}[0-9a-f]{1,4}$/.test(ip);
   if (!isIpV4 && !isIpV6) {
     throw new Error(`Invalid IP address: ${ip}`);
+  }
+
+  const domainIp = domainIpCommandOutput.stdout.trim();
+  if (ip === domainIp) {
+    logger.info(`Domain IP address is already up-to-date: ${ip}`);
+    return;
   }
 
   logger.debug(

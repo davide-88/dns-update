@@ -24,21 +24,27 @@ try {
   await Promise.all(
     [
       {
-        retrieveIpCommand: 'dig +short ch txt whoami.cloudflare -4 @1.1.1.1',
+        commands: {
+          hostIp: 'dig +short ch txt whoami.cloudflare -4 @1.1.1.1',
+          domainIp: `dig +short ${recordName} A`,
+        },
         context: UPDATE_IP.IP_V4,
       },
       {
-        retrieveIpCommand:
-          'dig +short ch txt whoami.cloudflare -6 @2606:4700:4700::1111',
+        commands: {
+          hostIp:
+            'dig +short ch txt whoami.cloudflare -6 @2606:4700:4700::1111',
+          domainIp: `dig +short ${recordName} AAAA`,
+        },
         context: UPDATE_IP.IP_V6,
       },
     ]
       .filter(
         ({ context }) => updateIp === UPDATE_IP.BOTH || updateIp === context,
       )
-      .map(({ retrieveIpCommand, context }) =>
+      .map(({ commands, context }) =>
         updateRoute53Record({
-          retrieveIpCommand,
+          commands,
           ...updateOptions,
           client: route53ClientFactory.create({
             logger: loggerFactory.create({ context }),
