@@ -1,0 +1,2 @@
+# min   hour    day     month   weekday command
+*/5     *       *       *       *       /update-route53-record.sh 2>&1

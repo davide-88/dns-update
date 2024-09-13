@@ -9,17 +9,18 @@ ENV AWS_SECRET_ACCESS_KEY ""
 ENV AWS_EXTERNAL_ID ""
 ENV AWS_ROLE_ARN ""
 ENV LOG_LEVEL "INFO"
+ENV LOG_FILE "/var/log/update-route53-record.log"
 
-COPY cron/ /
+COPY root/ /
 RUN /usr/bin/crontab /etc/crontabs/crontab
 
 RUN \
       echo "**** install packages ****" && \
       apk add --no-cache \
-        bind-tools
+        bind-tools \
+        logrotate
 
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod 755 /entrypoint.sh
+RUN chmod 755 /entrypoint.sh && chmod 755 /update-route53-record.sh
 
 COPY dist/ /app/
 
