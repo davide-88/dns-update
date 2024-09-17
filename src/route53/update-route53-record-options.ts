@@ -8,7 +8,7 @@ export const UPDATE_IP = {
   BOTH: 'both',
 } as const;
 export type UpdateIp = (typeof UPDATE_IP)[keyof typeof UPDATE_IP];
-export const updateIp = Object.values(UPDATE_IP) as UpdateIp[];
+export const updateIps = new Set(Object.values(UPDATE_IP));
 
 export const parseOptions = (): {
   hostedZoneId: string;
@@ -44,7 +44,7 @@ export const parseOptions = (): {
     ),
     recordName: requireDefined(values.recordName, 'recordName is required'),
     updateIp:
-      values.updateIp && values.updateIp in updateIp
+      values.updateIp && updateIps.has(values.updateIp as never)
         ? (values.updateIp as UpdateIp)
         : UPDATE_IP.IP_V4,
   };

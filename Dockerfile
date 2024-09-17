@@ -17,7 +17,6 @@ RUN /usr/bin/crontab /etc/crontabs/crontab
 RUN \
       echo "**** install packages ****" && \
       apk add --no-cache \
-        bind-tools \
         logrotate
 
 RUN chmod 755 /entrypoint.sh && chmod 755 /update-route53-record.sh

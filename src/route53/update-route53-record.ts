@@ -1,5 +1,4 @@
-import { exec as nodeExec } from 'node:child_process';
-import { inspect, promisify } from 'node:util';
+import { inspect } from 'node:util';
 import {
   ChangeResourceRecordSetsCommand,
   Route53Client,
@@ -8,8 +7,6 @@ import {
 import { loggerFactory } from '../utils/logger/logger-factory.js';
 import { Logger } from '../utils/logger/logger.js';
 import { requireDefined } from '../utils/typescript/require-defined.js';
-
-const exec = promisify(nodeExec);
 
 export const updateRoute53Record = async ({
   client,
@@ -20,8 +17,8 @@ export const updateRoute53Record = async ({
   }),
 }: {
   commands: {
-    hostIp: string;
-    domainIp: string;
+    hostIp: () => Promise<string>;
+    domainIp: () => Promise<string>;
   };
   client: Route53Client;
   resourceRecordSetProps: {
@@ -31,18 +28,15 @@ export const updateRoute53Record = async ({
   };
   logger?: Logger;
 }) => {
-  logger.debug(`Retrieving Host IP address using command: ${commands.hostIp}`);
-  logger.debug(
-    `Retrieving Domain IP address using command: ${commands.domainIp}`,
-  );
+  logger.debug(`Retrieving Host and Domain IPs`);
   const [hostIpCommandOutput, domainIpCommandOutput] = await Promise.all([
-    exec(commands.hostIp),
-    exec(commands.domainIp),
+    commands.hostIp(),
+    commands.domainIp(),
   ]);
-  logger.debug(`Retrieved Host IP address: ${hostIpCommandOutput.stdout}`);
-  logger.debug(`Retrieved Domain IP address: ${domainIpCommandOutput.stdout}`);
+  logger.debug(`Retrieved Host IP address: ${hostIpCommandOutput}`);
+  logger.debug(`Retrieved Domain IP address: ${domainIpCommandOutput}`);
   const ip = requireDefined(
-    /"(?<ip>.*)"/.exec(hostIpCommandOutput.stdout)?.groups?.ip,
+    hostIpCommandOutput,
     `Failed to retrieve IP address: ${inspect(hostIpCommandOutput, { depth: null })}`,
   );
 
@@ -53,7 +47,7 @@ export const updateRoute53Record = async ({
     throw new Error(`Invalid IP address: ${ip}`);
   }
 
-  const domainIp = domainIpCommandOutput.stdout.trim();
+  const domainIp = domainIpCommandOutput.trim();
   if (ip === domainIp) {
     logger.info(`Domain IP address is already up-to-date: ${ip}`);
     return;

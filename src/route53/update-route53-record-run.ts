@@ -1,9 +1,12 @@
+import { lookup } from 'node:dns/promises';
 import { hrtime } from 'node:process';
 import { inspect } from 'node:util';
 
 import { route53ClientFactory } from '../utils/aws/sdk/route53-client-factory.js';
 import { loggerFactory } from '../utils/logger/logger-factory.js';
 
+import { IP_VERSION } from './public-ip-resolver/public-host-ip-resolver.js';
+import { resolvePublicHostIp } from './public-ip-resolver/resolve-public-host-ip.js';
 import { parseOptions, UPDATE_IP } from './update-route53-record-options.js';
 import { updateRoute53Record } from './update-route53-record.js';
 
@@ -14,6 +17,9 @@ const logger = loggerFactory.create({
 try {
   const start = hrtime.bigint();
   const { hostedZoneId, recordName, updateIp } = parseOptions();
+  logger.debug(
+    `Input options: ${inspect({ hostedZoneId, recordName, updateIp })}`,
+  );
 
   const updateOptions = {
     resourceRecordSetProps: {
@@ -25,16 +31,25 @@ try {
     [
       {
         commands: {
-          hostIp: 'dig +short ch txt whoami.cloudflare -4 @1.1.1.1',
-          domainIp: `dig +short ${recordName} A`,
+          hostIp: async () => (await resolvePublicHostIp(IP_VERSION.V4)).ip,
+          domainIp: async () =>
+            (
+              await lookup(recordName, {
+                family: 4,
+              })
+            ).address,
         },
         context: UPDATE_IP.IP_V4,
       },
       {
         commands: {
-          hostIp:
-            'dig +short ch txt whoami.cloudflare -6 @2606:4700:4700::1111',
-          domainIp: `dig +short ${recordName} AAAA`,
+          hostIp: async () => (await resolvePublicHostIp(IP_VERSION.V6)).ip,
+          domainIp: async () =>
+            (
+              await lookup(recordName, {
+                family: 6,
+              })
+            ).address,
         },
         context: UPDATE_IP.IP_V6,
       },
