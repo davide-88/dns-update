@@ -48,8 +48,8 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@aws-sdk/client-route-53": "3.667.0",
-    "@aws-sdk/credential-providers": "3.667.0",
+    "@aws-sdk/client-route-53": "3.668.0",
+    "@aws-sdk/credential-providers": "3.668.0",
     "esbuild": "0.24.0"
   },
   "devDependencies": {
