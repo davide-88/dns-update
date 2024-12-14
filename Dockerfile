@@ -19,7 +19,9 @@ RUN \
       apk add --no-cache \
         logrotate
 
-RUN chmod 755 /entrypoint.sh && chmod 755 /update-route53-record.sh
+RUN chmod 755 /entrypoint.sh && \
+    chmod 755 /update-route53-record.sh && \
+    chmod 755 /logrotate.sh
 
 COPY dist/ /app/
 
