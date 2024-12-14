@@ -6,6 +6,7 @@ import {
 
 import { loggerFactory } from '../utils/logger/logger-factory.js';
 import { Logger } from '../utils/logger/logger.js';
+import { ipValidator } from '../utils/typescript/ip-validator.js';
 import { requireDefined } from '../utils/typescript/require-defined.js';
 
 export const updateRoute53Record = async ({
@@ -40,9 +41,8 @@ export const updateRoute53Record = async ({
     `Failed to retrieve IP address: ${inspect(hostIpCommandOutput, { depth: null })}`,
   );
 
-  //regexp ip v4
-  const isIpV4 = /^(\d{1,3}\.){3}\d{1,3}$/.test(ip);
-  const isIpV6 = /^([0-9a-f]{1,4}:){7}[0-9a-f]{1,4}$/.test(ip);
+  const isIpV4 = ipValidator.validate({ version: 'v4', ip });
+  const isIpV6 = ipValidator.validate({ version: 'v6', ip });
   if (!isIpV4 && !isIpV6) {
     throw new Error(`Invalid IP address: ${ip}`);
   }

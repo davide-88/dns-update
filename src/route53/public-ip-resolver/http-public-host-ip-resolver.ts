@@ -1,6 +1,7 @@
 import { inspect } from 'node:util';
 
 import { loggerFactory } from '../../utils/logger/logger-factory.js';
+import { ipValidator } from '../../utils/typescript/ip-validator.js';
 
 import {
   CouldNotResolvePublicHostIpError,
@@ -106,8 +107,14 @@ export class HttpPublicHostIpResolver extends PublicHostIpResolver {
         try {
           const resp = await fetch(server);
           this.logger.debug(`Response: ${inspect(resp, { depth: null })}`);
+          const ip = await provider[this.version].transform(resp);
+          if (!ipValidator.validate({ version: this.version, ip })) {
+            throw new CouldNotResolvePublicHostIpError(
+              `IP ${ip} is not a valid IP ${this.version} address`,
+            );
+          }
           return {
-            ip: await provider[this.version].transform(resp),
+            ip,
           };
         } catch (err) {
           this.logger.error(

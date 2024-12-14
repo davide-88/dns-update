@@ -2,6 +2,7 @@ import { Resolver } from 'node:dns';
 import { inspect, promisify } from 'node:util';
 
 import { loggerFactory } from '../../utils/logger/logger-factory.js';
+import { ipValidator } from '../../utils/typescript/ip-validator.js';
 
 import {
   CouldNotResolvePublicHostIpError,
@@ -148,8 +149,14 @@ export class DnsPublicHostIpResolver extends PublicHostIpResolver {
           dnsServerForSpecificVersion.type,
         );
         this.logger.debug(`records: ${inspect(records, { depth: null })}`);
+        const ip = dnsServerForSpecificVersion.transform(records);
+        if (!ipValidator.validate({ version: this.version, ip })) {
+          throw new CouldNotResolvePublicHostIpError(
+            `IP ${ip} is not a valid IP ${this.version} address`,
+          );
+        }
         return {
-          ip: dnsServerForSpecificVersion.transform(records),
+          ip,
         };
       } catch (err) {
         console.error('Error querying DNS:', err);
