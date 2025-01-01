@@ -34,8 +34,8 @@ importers:
         specifier: 4.4.0
         version: 4.4.0(prettier@3.4.2)
       '@tsconfig/node-lts':
-        specifier: 20.1.3
-        version: 20.1.3
+        specifier: 22.0.1
+        version: 22.0.1
       '@types/node':
         specifier: 20.17.11
         version: 20.17.11
@@ -1088,8 +1088,8 @@ packages:
     resolution: {integrity: sha512-PpjSboaDUE6yl+1qlg3Si57++e84oXdWGbuFUSAciXsVfEZJJJupR2Nb0QuXHiunt2vGR+1PTizOMvnUPaG2Qg==}
     engines: {node: '>=16.0.0'}
 
-  '@tsconfig/node-lts@20.1.3':
-    resolution: {integrity: sha512-m3b7EP2U+h5tNSpaBMfcTuHmHn04wrgRPQQrfKt75YIPq6kPs2153/KfPHdqkEWGx5pEBvS6rnvToT+yTtC1iw==}
+  '@tsconfig/node-lts@22.0.1':
+    resolution: {integrity: sha512-BwlbLiYurZKrj+Pa6etSE1jXmr3VEDdgJto1jEYKcpBVwZZSWVkCPyFEFYbHdIOaFMlSTtV206DYPlT109aqug==}
 
   '@types/conventional-commits-parser@5.0.0':
     resolution: {integrity: sha512-loB369iXNmAZglwWATL+WRe+CRMmmBPtpolYzIebFaX4YA3x+BEfLqhUAV9WanycKI3TG1IMr5bMJDajDKLlUQ==}
@@ -4236,7 +4236,7 @@ snapshots:
       '@smithy/types': 3.7.2
       tslib: 2.6.3
 
-  '@tsconfig/node-lts@20.1.3': {}
+  '@tsconfig/node-lts@22.0.1': {}
 
   '@types/conventional-commits-parser@5.0.0':
     dependencies:
