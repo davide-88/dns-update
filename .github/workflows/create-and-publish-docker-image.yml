@@ -53,7 +53,7 @@ jobs:
       - name: Build
         run: pnpm run build
       - name: Log in to the Container registry
-        uses: docker/login-action@7ca345011ac4304463197fac0e56eab1bc7e6af0
+        uses: docker/login-action@abd2ef45e78c5afb21d64d4ca52ee8550d9572c7
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
